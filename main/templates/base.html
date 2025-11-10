@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}PetRescue — Reuniting Pets with Families{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  {% block head_extra %}{% endblock %}
+
+  <style>
+    :root {
+      --blue: #0ea5e9;
+      --green: #10b981;
+      --dark: #0f172a;
+      --text: #334155;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9fafb;
+      color: var(--text);
+      overflow-x: hidden;
+      opacity: 0;
+      animation: fadeInPage 0.8s ease forwards;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .navbar.scrolled {
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    }
+    .navbar-brand {
+      font-weight: 800;
+      font-size: 1.4rem;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: .5px;
+      transition: 0.3s;
+    }
+    .navbar-brand:hover { transform: scale(1.05); }
+    .nav-link {
+      color: var(--dark);
+      font-weight: 500;
+      position: relative;
+      transition: 0.3s;
+    }
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -3px;
+      left: 0;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link:hover { color: var(--blue); }
+    .btn-outline-success {
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .btn-outline-success:hover {
+      background: var(--green);
+      color: #fff;
+    }
+
+    /* ===== MAIN ===== */
+    main {
+      flex-grow: 1;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: linear-gradient(120deg, var(--blue), var(--green));
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    footer::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,.1), transparent 70%);
+      animation: rotateGlow 20s linear infinite;
+    }
+    @keyframes rotateGlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    footer h6 {
+      font-weight: 600;
+      color: #fff;
+    }
+    footer a {
+      color: rgba(255,255,255,0.85);
+      transition: 0.3s;
+    }
+    footer a:hover { color: #fff; text-decoration: underline; }
+
+    /* ===== SOCIAL ICONS ===== */
+    .social-icons a {
+      color: #fff;
+      font-size: 1.2rem;
+      margin-right: 0.8rem;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .social-icons a:hover {
+      transform: translateY(-4px);
+      color: #fff;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInPage {
+      to { opacity: 1; }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--blue), var(--green));
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+  <!-- ===== NAVBAR ===== -->
+  <nav class="navbar navbar-expand-lg navbar-light sticky-top py-3">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-paw me-2"></i>PetRescue
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'find_pets' %}">Find Pets</a></li>
+          {% endif %}
+          {% if user.is_authenticated and user.is_superuser %}
+            <li class="nav-item"><a class="nav-link" href="/dashboard/admin/">Admin Dashboard</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">My Profile</a></li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+            <li class="nav-item"><a class="nav-link btn btn-outline-success ms-2 px-3 rounded-pill" href="{% url 'register' %}">Sign Up</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== CONTENT AREA ===== -->
+  <main class="container my-4">
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ===== LOGOUT MODAL ===== -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 rounded-3">
+        <div class="modal-header border-0 bg-light">
+          <h5 class="modal-title fw-semibold">Confirm Logout</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to logout from PetRescue?</p>
+          <p class="text-muted small mb-0">You’ll need to log in again to continue helping pets find their way home.</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="{% url 'logout' %}" class="btn btn-danger">Yes, Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="py-5 mt-auto text-white">
+    <div class="container position-relative">
+      <div class="row gy-4">
+        <div class="col-lg-4">
+          <h5 class="fw-bold mb-3"><i class="fas fa-paw me-2"></i>PetRescue</h5>
+          <p>Helping lost pets find their way home and connecting them with loving families since 2025.</p>
+          <div class="social-icons mt-3">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <h6>Quick Links</h6>
+          <ul class="list-unstyled">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'find_pets' %}">Find Pets</a></li>
+            <li><a href="#">Report Lost Pet</a></li>
+            <li><a href="#">About Us</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Resources</h6>
+          <ul class="list-unstyled">
+            <li><a href="#">Adoption Guide</a></li>
+            <li><a href="#">Volunteer</a></li>
+            <li><a href="#">Pet Care Tips</a></li>
+            <li><a href="#">Donate</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h6>Contact</h6>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-envelope me-2"></i> help@petrescue.com</li>
+            <li><i class="fas fa-phone me-2"></i> +91 7655823962</li>
+            <li><i class="fas fa-map-marker-alt me-2"></i> Pet Street, Animal City</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="mt-4 mb-3 border-light opacity-25">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <p class="mb-0">&copy; {{ now|date:"Y" }} PetRescue. All rights reserved.</p>
+        <p class="mb-0">
+          <a href="#" class="text-decoration-none me-3">Privacy Policy</a>
+          <a href="#" class="text-decoration-none">Terms of Service</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Navbar scroll shadow
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 10);
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

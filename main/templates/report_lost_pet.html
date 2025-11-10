@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Report Lost Pet | PetRescue{% endblock %}
+
+{% block head_extra %}
+<!-- Google Fonts + Animate.css -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+  /* ===== THEME: Aqua Green + Sky Blue ===== */
+  :root {
+    --aqua: #10b981;
+    --aqua-dark: #0e9f6e;
+    --sky: #22c7ff;
+    --sky-dark: #0ea5e9;
+    --bg-light: #e7faff;
+    --bg-light2: #ebfff7;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --white: #fff;
+    --glass: rgba(255,255,255,0.25);
+    --shadow: 0 10px 40px rgba(0,0,0,0.1);
+  }
+
+  /* ===== PAGE BACKGROUND ===== */
+  body { overflow-x: hidden; }
+  .lost-pet-bg {
+    background:
+      radial-gradient(800px 400px at 100% 0%, rgba(16,185,129,0.25), transparent 70%),
+      radial-gradient(1000px 600px at 0% 100%, rgba(34,199,255,0.25), transparent 75%),
+      linear-gradient(135deg, var(--bg-light) 0%, var(--bg-light2) 100%);
+    min-height: 100vh;
+    padding: 2rem 0;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+  }
+
+  /* Floating paw prints animation */
+  .paws {
+    position: absolute;
+    inset: 0;
+    opacity: 0.15;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><g fill='%2310b981'><circle cx='40' cy='40' r='6'/><circle cx='70' cy='30' r='5'/><circle cx='35' cy='75' r='5'/><path d='M80 90c10 0 15 5 15 10s-5 8-15 8-15-3-15-8 5-10 15-10z'/></g></svg>");
+    background-size: 200px 200px;
+    animation: floatPaws 40s linear infinite;
+  }
+  @keyframes floatPaws {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 -200px; }
+  }
+
+  /* ===== HEADER ===== */
+  .header-section {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .header-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(16,185,129,0.2), rgba(34,199,255,0.2));
+    border: 1px solid rgba(34,199,255,0.4);
+    font-weight: 600;
+    color: var(--aqua-dark);
+    letter-spacing: 0.3px;
+  }
+  .header-section h1 {
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    color: var(--text-dark);
+    margin: 1rem 0 0.6rem;
+  }
+  .header-section p {
+    color: var(--text-muted);
+    max-width: 750px;
+    margin: 0 auto;
+  }
+
+  /* ===== CARD ===== */
+  .report-card {
+    border-radius: 20px;
+    background: rgba(255,255,255,0.85);
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    border: none;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .report-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 45px rgba(15,23,42,0.15);
+  }
+
+  .card-header-lost {
+    background: linear-gradient(90deg, var(--aqua), var(--sky));
+    color: white;
+    text-align: center;
+    padding: 1.8rem;
+  }
+  .card-header-lost h2 {
+    font-weight: 700;
+    margin: 0;
+  }
+  .card-header-lost p {
+    margin-top: 0.4rem;
+    opacity: 0.9;
+  }
+
+  .form-container {
+    padding: 2rem;
+  }
+
+  /* ===== FORM FIELDS ===== */
+  .form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 0.3rem;
+  }
+  .form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    background-color: #f0fdfd;
+    padding: 0.8rem 1rem;
+    transition: all 0.3s ease;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--sky);
+    background-color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(34,199,255,0.2);
+    transform: translateY(-1px);
+  }
+
+  /* ===== IMAGE UPLOAD ===== */
+  .image-upload-area {
+    border: 2px dashed var(--aqua);
+    border-radius: 14px;
+    padding: 2rem;
+    text-align: center;
+    background: rgba(16,185,129,0.06);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .image-upload-area:hover {
+    background: rgba(34,199,255,0.08);
+    border-color: var(--sky);
+    box-shadow: 0 0 0 0.2rem rgba(34,199,255,0.12);
+  }
+  .image-upload-area i {
+    font-size: 2rem;
+    color: var(--aqua);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Preview thumbnails */
+  .preview-image {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: 2px solid #fff;
+  }
+  .remove-btn, .add-more-btn {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .remove-btn { top: 6px; right: 6px; border: 2px solid #ef4444; }
+  .remove-btn i { color: #ef4444; }
+  .remove-btn:hover { background: #ef4444; transform: scale(1.05); }
+  .remove-btn:hover i { color: #fff; }
+  .add-more-btn { bottom: 8px; right: 8px; border: 2px solid var(--aqua); }
+  .add-more-btn i { color: var(--aqua); }
+  .add-more-btn:hover { background: var(--aqua); transform: scale(1.05); }
+  .add-more-btn:hover i { color: #fff; }
+
+  /* ===== BUTTONS ===== */
+  .btn-lost-pet {
+    background: linear-gradient(90deg, var(--aqua), var(--sky));
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border-radius: 999px;
+    padding: 0.85rem 1.8rem;
+    box-shadow: 0 10px 24px rgba(16,185,129,0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn-lost-pet:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(34,199,255,0.35);
+  }
+  .btn-cancel {
+    border: none;
+    border-radius: 999px;
+    padding: 0.85rem 1.5rem;
+    font-weight: 700;
+    background: #e6f7ff;
+    color: var(--text-dark);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn-cancel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+
+  /* ===== ALERT ===== */
+  .alert-lost {
+    border-left: 6px solid var(--aqua);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #e0faff 100%);
+    padding: 1rem 1.2rem;
+    box-shadow: var(--shadow);
+  }
+  .alert-lost .alert-heading {
+    color: var(--aqua-dark);
+    font-weight: 700;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .reveal { opacity: 0; transform: translateY(24px); }
+  .reveal.visible { opacity: 1; transform: none; transition: all 0.8s ease; }
+
+  @media (max-width:768px) {
+    .btn-lost-pet, .btn-cancel { width: 100%; margin-bottom: 0.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lost-pet-bg">
+  <div class="paws"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header-section animate__animated animate__fadeInDown">
+      <span class="header-badge"><i class="fas fa-heart me-1"></i> Lost Pet Mission</span>
+      <h1>Report a Lost Pet</h1>
+      <p>We’ll help you spread the word to find your beloved companion. Every detail brings them one step closer to home.</p>
+    </div>
+
+    <!-- Community Alert -->
+    <div class="row justify-content-center mb-3 reveal">
+      <div class="col-lg-8">
+        <div class="alert alert-lost text-center" role="alert">
+          <h4 class="alert-heading">You’re not alone 🐾</h4>
+          <p class="mb-0">Our team and community are here to help bring your pet back home. Let’s start by sharing some details below.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lost Pet Form -->
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="report-card reveal">
+          <div class="card-header-lost">
+            <h2><i class="fas fa-search me-2"></i> Lost Pet Details</h2>
+            <p>Please fill out this form accurately to maximize your chances of recovery.</p>
+          </div>
+
+          <div class="form-container">
+            <form method="POST" enctype="multipart/form-data" id="lost-pet-form">
+              {% csrf_token %}
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.pet_name.id_for_label }}" class="form-label">Pet Name <span class="text-danger">*</span></label>
+                  {{ form.pet_name }}
+                  <div id="pet_name-error" class="error-message"></div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.pet_type.id_for_label }}" class="form-label">Pet Type</label>
+                  {{ form.pet_type }}
+                  <div id="pet_type-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.breed.id_for_label }}" class="form-label">Breed</label>
+                  {{ form.breed }}
+                  <div id="breed-error" class="error-message"></div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+                  {{ form.color }}
+                  <div id="color-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.last_seen_location.id_for_label }}" class="form-label">Last Seen Location</label>
+                  {{ form.last_seen_location }}
+                  <div id="last_seen_location-error" class="error-message"></div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.date_lost.id_for_label }}" class="form-label">Date Lost</label>
+                  {{ form.date_lost }}
+                  <div id="date_lost-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.owner_contact.id_for_label }}" class="form-label">Owner Contact</label>
+                  {{ form.owner_contact }}
+                  <div id="owner_contact-error" class="error-message"></div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                  <label for="{{ form.alternate_email.id_for_label }}" class="form-label">Alternate Email</label>
+                  {{ form.alternate_email }}
+                  <div id="alternate_email-error" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="{{ form.pet_photo.id_for_label }}" class="form-label">Pet Photos</label>
+                <div class="image-upload-area" id="image-upload-trigger">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p class="mb-1"><strong>Click to upload clear photos</strong></p>
+                  <p class="text-muted small mb-0">JPG/PNG • Up to 5MB each • Multiple allowed</p>
+                </div>
+                {{ form.pet_photo }}
+                <div id="pet_photo-error" class="error-message"></div>
+
+                <div class="image-preview-container mt-3" id="image-preview">
+                  <div class="row g-2" id="preview-container"></div>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Additional Details</label>
+                {{ form.description }}
+                <div id="description-error" class="error-message"></div>
+                <div class="form-text">Provide distinctive features, personality traits, collar/tags, or microchip info.</div>
+              </div>
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-2">
+                <button type="submit" class="btn-lost-pet flex-fill" id="submit-btn">
+                  <i class="fas fa-paper-plane me-2"></i> Report Lost Pet
+                </button>
+                <a href="{% url 'home' %}" class="btn-cancel flex-fill ms-md-2">
+                  <i class="fas fa-arrow-left"></i> Back to Home
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="reveal mt-4">
+          <div class="alert-lost">
+            <h5><i class="fas fa-lightbulb me-2"></i> Helpful Tips</h5>
+            <ul>
+              <li>Include recent photos showing distinctive features or collars.</li>
+              <li>Provide accurate contact details so rescuers can reach you quickly.</li>
+              <li>Describe temperament (friendly, shy, etc.) to ensure safe handling.</li>
+            </ul>
+            <p class="mb-0">You can reach us anytime at <a href="mailto:help@petrescue.com">help@petrescue.com</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Section reveal animation
+  document.addEventListener('DOMContentLoaded', () => {
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => observer.observe(el));
+  });
+</script>
+{% endblock %}

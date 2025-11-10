@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to PetRescue | Every Paw Deserves a Home{% endblock %}
+
+{% block content %}
+
+<!-- ====== HERO (FULL SCREEN LANDING) ====== -->
+<section class="main-hero position-relative d-flex align-items-center justify-content-center text-center text-white">
+  <div class="overlay"></div>
+  <div class="hero-content container position-relative">
+    <h1 class="display-3 fw-bold animate-fade-up">
+      <span class="highlight">PetRescue:</span> Because Every Paw Matters 🐶🐱
+    </h1>
+    <p class="lead mb-4 animate-fade-up-delay">
+      A compassionate platform helping lost pets reunite with their families and finding homes for the homeless.
+    </p>
+
+    <form class="search-main d-flex justify-content-center animate-fade-up-delay2" action="{% url 'find_pets' %}" method="get">
+      <input type="text" name="q" placeholder="Search lost or found pets near you..." class="form-control search-input-lg">
+      <button type="submit" class="btn btn-search-lg"><i class="fas fa-search me-2"></i>Find Now</button>
+    </form>
+
+    <div class="mt-5">
+      {% if user.is_authenticated %}
+        <a href="{% url 'report_lost_pet' %}" class="btn btn-hero-blue me-3"><i class="fas fa-search me-2"></i> Report Lost</a>
+        <a href="{% url 'report_found_pet' %}" class="btn btn-hero-green"><i class="fas fa-paw me-2"></i> Report Found</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-hero-blue me-3"><i class="fas fa-sign-in-alt me-2"></i> Sign In</a>
+        <a href="{% url 'register' %}" class="btn btn-hero-green"><i class="fas fa-user-plus me-2"></i> Join Us</a>
+      {% endif %}
+    </div>
+  </div>
+  <svg class="wave-bottom" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path d="M0,64L60,58.7C120,53,240,43,360,48C480,53,600,75,720,80C840,85,960,75,1080,69.3L1200,64L1440,80L1440,0L0,0Z"></path>
+  </svg>
+</section>
+
+<!-- ====== ABOUT SECTION ====== -->
+<section class="about-section py-5">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3 section-title">Our Mission</h2>
+    <p class="lead text-muted mx-auto" style="max-width:800px;">
+      At PetRescue, we believe in giving every pet a second chance. Whether lost, found, or looking for a home, 
+      we connect humans and animals with technology and heart ❤️.
+    </p>
+    <div class="row mt-5 g-4">
+      <div class="col-md-4">
+        <div class="info-card">
+          <i class="fas fa-search fa-3x mb-3"></i>
+          <h5>Find Lost Pets</h5>
+          <p>Instantly search your area for missing pets using smart location tools.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <i class="fas fa-bullhorn fa-3x mb-3"></i>
+          <h5>Community Alerts</h5>
+          <p>Nearby users get real-time notifications — faster visibility saves lives.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card">
+          <i class="fas fa-heart fa-3x mb-3"></i>
+          <h5>Reunite & Adopt</h5>
+          <p>Every success story motivates us to make more tails wag again.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SUCCESS STORIES ====== -->
+<section class="stories-section py-5 text-white">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-3">Happy Endings 🐾</h2>
+    <p class="mb-5 text-white-50">Real stories from our heroes — people like you.</p>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="story-card">
+          <img src="https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=800&q=80" class="story-img">
+          <div class="story-overlay">
+            <h5>“Max came home!”</h5>
+            <p>We found him through PetRescue within 2 days! – Priya & Family</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="story-card">
+          <img src="https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=800&q=80" class="story-img">
+          <div class="story-overlay">
+            <h5>“Milo got adopted!”</h5>
+            <p>Thanks to the PetRescue community, he’s now with a loving home.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="story-card">
+          <img src="https://images.unsplash.com/photo-1583511655826-05700d52f4d9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHBldHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=500" class="story-img">
+          <div class="story-overlay">
+            <h5>“Shadow was found safe.”</h5>
+            <p>Volunteers helped spot him nearby. We’re so grateful!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== STATS ====== -->
+<section class="stats-section py-5">
+  <div class="container text-center">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="stat-box">
+          <h3 class="count" data-target="15000">0</h3>
+          <p>Pets Reunited</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <h3 class="count" data-target="3000">0</h3>
+          <p>Adoptions</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <h3 class="count" data-target="5000">0</h3>
+          <p>Volunteers</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-box">
+          <h3 class="count" data-target="95">0</h3>
+          <p>Success Rate %</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="cta-main text-white text-center py-5">
+  <div class="container">
+    <h3 class="fw-bold mb-3">Be a Part of the Movement 🐕</h3>
+    <p class="mb-4 text-white-50">Join thousands of heroes making the world kinder, one rescue at a time.</p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="btn btn-light btn-lg fw-bold">Join PetRescue</a>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block head_extra %}
+<style>
+  :root {
+    --blue: #0ea5e9;
+    --green: #10b981;
+    --dark: #0f172a;
+  }
+
+  /* HERO */
+  .main-hero {
+    background: url("https://images.unsplash.com/photo-1601758124092-3c28f4c3d10c?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+    height: 100vh;
+  }
+  .overlay {
+    position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6);
+  }
+  .hero-content { z-index: 10; }
+  .highlight { color: #fff; background: linear-gradient(90deg,#22c7ff,#10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  .search-input-lg {
+    border-radius: 999px;
+    padding: 1rem 1.4rem;
+    width: 400px;
+    border: none;
+    outline: none;
+  }
+  .btn-search-lg {
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    border: none; border-radius: 999px;
+    color: #fff; padding: 0.9rem 1.5rem; font-weight: 700;
+  }
+
+  .btn-hero-blue { background: var(--blue); color: #fff; border-radius: 999px; padding: .8rem 1.4rem; }
+  .btn-hero-green { background: var(--green); color: #fff; border-radius: 999px; padding: .8rem 1.4rem; }
+
+  .wave-bottom { position: absolute; bottom: -1px; width: 100%; height: 100px; fill: #fff; }
+
+  /* ABOUT */
+  .info-card {
+    background: #fff; border-radius: 20px; padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: 0.3s;
+  }
+  .info-card:hover { transform: translateY(-8px); }
+
+  /* STORIES */
+  .stories-section {
+    background: linear-gradient(120deg, var(--blue), var(--green));
+  }
+  .story-card { position: relative; border-radius: 20px; overflow: hidden; }
+  .story-img { width: 100%; height: 280px; object-fit: cover; }
+  .story-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    opacity: 0; transition: .4s;
+    color: #fff; padding: 1rem;
+  }
+  .story-card:hover .story-overlay { opacity: 1; }
+
+  /* STATS */
+  .stats-section { background: #f8fafc; }
+  .stat-box h3 {
+    color: var(--blue);
+    font-weight: 900;
+    font-size: 2.4rem;
+  }
+
+  /* CTA */
+  .cta-main {
+    background: linear-gradient(120deg, var(--blue), var(--green));
+  }
+
+  /* ANIMATIONS */
+  .animate-fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards; }
+  .animate-fade-up-delay { opacity: 0; transform: translateY(20px); animation: fadeUp 1s .3s forwards; }
+  .animate-fade-up-delay2 { opacity: 0; transform: translateY(20px); animation: fadeUp 1s .6s forwards; }
+  @keyframes fadeUp { to { opacity: 1; transform: none; } }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Stats count animation
+  document.querySelectorAll('.count').forEach(num => {
+    const target = +num.getAttribute('data-target');
+    let current = 0;
+    const speed = target / 80;
+    const update = () => {
+      current += speed;
+      if(current < target) {
+        num.textContent = Math.floor(current);
+        requestAnimationFrame(update);
+      } else num.textContent = target;
+    };
+    const observer = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting) {
+        update();
+        observer.disconnect();
+      }
+    }, { threshold: .6 });
+    observer.observe(num);
+  });
+</script>
+{% endblock %}

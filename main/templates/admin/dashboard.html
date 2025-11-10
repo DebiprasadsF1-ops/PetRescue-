@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_extra %}
+<link href="{% static 'css/admin.css' %}" rel="stylesheet">
+
+<style>
+/* ---------- General Enhancements ---------- */
+body {
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ---------- Header ---------- */
+h2 {
+  font-weight: 600;
+  color: #343a40;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+p {
+  color: #6c757d;
+}
+
+/* ---------- Stat Cards ---------- */
+.stats-card {
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stats-card-warning {
+  background: linear-gradient(135deg, #ffecb3, #ffca28);
+  color: #856404;
+}
+.stats-card-success {
+  background: linear-gradient(135deg, #c8e6c9, #66bb6a);
+  color: #1b5e20;
+}
+.stats-card-danger {
+  background: linear-gradient(135deg, #ffcdd2, #e57373);
+  color: #b71c1c;
+}
+
+/* ---------- Tabs ---------- */
+.nav-tabs {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-link {
+  color: #495057;
+  font-weight: 500;
+  padding: 12px 20px;
+  border: none !important;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background: #e9ecef;
+  color: #007bff;
+}
+
+.nav-link.active {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: #fff !important;
+}
+
+/* ---------- Request Cards ---------- */
+.request-card {
+  border: none;
+  border-radius: 18px;
+  background: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.request-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.badge-pending {
+  background: #ffc107;
+  color: #fff;
+  font-size: 0.8rem;
+  padding: 5px 8px;
+  border-radius: 10px;
+}
+
+.btn-sm {
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-sm:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Modal ---------- */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+/* ---------- Toast ---------- */
+.toast {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeInUp {
+  from {opacity: 0; transform: translateY(15px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+.card, .stats-card, .request-card {
+  animation: fadeInUp 0.6s ease both;
+}
+</style>
+{% endblock %}
+
+{% block title %}Admin Dashboard | PetRescue{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="text-center mb-5">
+    <h2 class="fw-bold">🐾 Admin Dashboard</h2>
+    <p class="lead">Welcome, <strong>{{ user.username }}</strong> — Manage and review pet rescue requests with ease.</p>
+  </div>
+
+  <!-- ---------- Stats Cards ---------- -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4 mb-4">
+      <div class="card stats-card stats-card-warning py-3">
+        <div class="card-body">
+          <h6 class="text-uppercase fw-bold mb-2">Pending Requests</h6>
+          <h3>{{ pending_count }}</h3>
+          <i class="fas fa-clock fa-2x mt-2"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card stats-card stats-card-success py-3">
+        <div class="card-body">
+          <h6 class="text-uppercase fw-bold mb-2">Accepted Requests</h6>
+          <h3>{{ accepted_count }}</h3>
+          <i class="fas fa-check-circle fa-2x mt-2"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card stats-card stats-card-danger py-3">
+        <div class="card-body">
+          <h6 class="text-uppercase fw-bold mb-2">Rejected Requests</h6>
+          <h3>{{ rejected_count }}</h3>
+          <i class="fas fa-times-circle fa-2x mt-2"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- Navigation Tabs ---------- -->
+  <ul class="nav nav-tabs mb-4 justify-content-center" id="adminTabs" role="tablist">
+    <li class="nav-item"><a class="nav-link active" href="{% url 'admin_pending_requests' %}"><i class="fas fa-clock"></i> Pending</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin_accepted_requests' %}"><i class="fas fa-check-circle"></i> Accepted</a></li>
+    <li class="nav-item"><a class="nav-link" href="{% url 'admin_rejected_requests' %}"><i class="fas fa-times-circle"></i> Rejected</a></li>
+  </ul>
+
+  <!-- ---------- Pending Requests Section ---------- -->
+  <div class="tab-content mt-4" id="adminTabContent">
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <h4 class="fw-bold text-primary">{{ pending_count }} Pending Requests</h4>
+      </div>
+    </div>
+
+    <div class="row">
+      {% if recent_pending %}
+        {% for req in recent_pending %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+          <div class="card request-card h-100 shadow-sm">
+            {% if req.pet.image %}
+              <img src="{{ req.pet.image.url }}" class="card-img-top rounded-top" alt="Pet Photo" style="height: 220px; object-fit: cover;">
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 220px;">
+                <i class="fas fa-paw fa-3x text-muted"></i>
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title fw-semibold text-dark">
+                {{ req.pet.breed }}
+                <span class="badge badge-pending">Pending</span>
+              </h5>
+              <p class="card-text text-secondary small">
+                <strong>Type:</strong> {{ req.pet.pet_type|title }}<br>
+                <strong>Color:</strong> {{ req.pet.color }}<br>
+                <strong>Location:</strong> {{ req.pet.location }}<br>
+                <strong>Date:</strong> {{ req.created_at|date:"M d, Y" }}<br>
+                <strong>Contact:</strong> {{ req.user.email }} / {{ req.phone_number }}
+              </p>
+              <div class="mt-auto text-center">
+                <button class="btn btn-success btn-sm me-2" data-bs-toggle="modal" data-bs-target="#confirmModal" data-status="accept" data-request-id="{{ req.id }}">
+                  <i class="fas fa-check"></i> Accept
+                </button>
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" data-status="reject" data-request-id="{{ req.id }}">
+                  <i class="fas fa-times"></i> Reject
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12">
+          <div class="alert alert-info text-center shadow-sm">No pending requests found.</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Confirmation Modal ---------- -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Confirm Status Change</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to <span id="action-text">accept</span> this request?</p>
+        <small class="text-muted">This action cannot be undone.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="statusForm" method="POST" style="display: inline;">
+          {% csrf_token %}
+          <input type="hidden" name="status" id="statusInput" value="">
+          <button type="submit" class="btn btn-success" id="confirm-button">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Toast Message ---------- -->
+<div class="toast" id="successToast" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+  <div class="toast-header bg-success text-white">
+    <strong class="me-auto">Success</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+  </div>
+  <div class="toast-body">Status updated successfully.</div>
+</div>
+
+<script>
+// Handle modal confirmation
+document.addEventListener('DOMContentLoaded', function() {
+  var confirmModal = document.getElementById('confirmModal');
+  confirmModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var status = button.getAttribute('data-status');
+    var requestId = button.getAttribute('data-request-id');
+    var modal = this;
+
+    var formAction = "{% url 'update_request_status' 999 %}".replace('999', requestId);
+    modal.querySelector('#statusForm').setAttribute('action', formAction);
+
+    if (status === 'accept') {
+      modal.querySelector('#action-text').textContent = 'accept';
+      modal.querySelector('#statusInput').value = 'Accepted';
+      modal.querySelector('#confirm-button').className = 'btn btn-success';
+      modal.querySelector('#confirm-button').textContent = 'Accept Request';
+    } else {
+      modal.querySelector('#action-text').textContent = 'reject';
+      modal.querySelector('#statusInput').value = 'Rejected';
+      modal.querySelector('#confirm-button').className = 'btn btn-danger';
+      modal.querySelector('#confirm-button').textContent = 'Reject Request';
+    }
+  });
+});
+
+// Toast Notification
+document.addEventListener('DOMContentLoaded', function() {
+  var messageContent = "{{ messages.0 }}" || "";
+  if (messageContent) {
+    document.querySelector('#successToast .toast-body').textContent = messageContent;
+    var toast = new bootstrap.Toast(document.getElementById('successToast'));
+    toast.show();
+  }
+});
+</script>
+{% endblock %}

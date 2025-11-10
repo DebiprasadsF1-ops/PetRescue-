@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Accepted Requests | Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-dark">✅ Accepted Requests</h2>
+    <p class="lead text-secondary">View and manage requests that have been successfully accepted.</p>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <ul class="nav nav-tabs justify-content-center mb-4 shadow-sm bg-white rounded" id="adminTabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'admin_dashboard' %}">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'admin_pending_requests' %}">
+        <i class="fas fa-clock"></i> Pending
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="{% url 'admin_accepted_requests' %}">
+        <i class="fas fa-check-circle"></i> Accepted
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'admin_rejected_requests' %}">
+        <i class="fas fa-times-circle"></i> Rejected
+      </a>
+    </li>
+  </ul>
+
+  <!-- Filter Section -->
+  <div class="card border-0 shadow-sm mb-5 rounded-4">
+    <div class="card-header text-white rounded-top" 
+         style="background: linear-gradient(135deg, #00b09b, #96c93d);">
+      <h5 class="mb-0 fw-semibold">🔍 Filters</h5>
+    </div>
+    <div class="card-body">
+      <form method="GET">
+        <div class="row g-4">
+          <div class="col-md-3">
+            <label for="pet_type" class="form-label fw-semibold">Pet Type</label>
+            <select name="pet_type" id="pet_type" class="form-select rounded-pill shadow-sm">
+              <option value="">All Types</option>
+              {% for type, name in pet_types %}
+                <option value="{{ type }}" {% if current_filters.pet_type == type %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="request_type" class="form-label fw-semibold">Request Type</label>
+            <select name="request_type" id="request_type" class="form-select rounded-pill shadow-sm">
+              <option value="">All Types</option>
+              {% for type, name in request_types %}
+                <option value="{{ type }}" {% if current_filters.request_type == type %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="sort_by" class="form-label fw-semibold">Sort By</label>
+            <select name="sort_by" id="sort_by" class="form-select rounded-pill shadow-sm">
+              <option value="date" {% if current_filters.sort_by == 'date' %}selected{% endif %}>Date</option>
+              <option value="name" {% if current_filters.sort_by == 'name' %}selected{% endif %}>User Name</option>
+              <option value="pet_type" {% if current_filters.sort_by == 'pet_type' %}selected{% endif %}>Pet Type</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label for="order" class="form-label fw-semibold">Order</label>
+            <select name="order" id="order" class="form-select rounded-pill shadow-sm">
+              <option value="desc" {% if current_filters.order == 'desc' %}selected{% endif %}>Descending</option>
+              <option value="asc" {% if current_filters.order == 'asc' %}selected{% endif %}>Ascending</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 text-center">
+          <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm me-2">
+            <i class="fas fa-filter"></i> Apply Filters
+          </button>
+          <a href="{% url 'admin_accepted_requests' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="fas fa-undo"></i> Clear Filters
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Requests Heading -->
+  <div class="text-center mb-4">
+    <h4 class="fw-bold text-success">{{ requests|length }} Accepted Requests</h4>
+  </div>
+
+  <!-- Request Cards -->
+  <div class="row">
+    {% if requests %}
+      {% for req in requests %}
+      <div class="col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow-sm border-0 rounded-4 accepted-card">
+          {% if req.pet.image %}
+            <img src="{{ req.pet.image.url }}" class="card-img-top rounded-top" alt="Pet Photo" style="height: 220px; object-fit: cover;">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 220px;">
+              <i class="fas fa-paw fa-3x text-muted"></i>
+            </div>
+          {% endif %}
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-semibold text-dark">
+              {{ req.pet.breed }}
+              <span class="badge bg-success text-white">Accepted</span>
+            </h5>
+            <p class="card-text text-secondary small">
+              <strong>Type:</strong> {{ req.pet.pet_type|title }}<br>
+              <strong>Color:</strong> {{ req.pet.color }}<br>
+              <strong>Location:</strong> {{ req.pet.location }}<br>
+              <strong>Date:</strong> {{ req.created_at|date:"M d, Y" }}<br>
+              <strong>Contact:</strong> {{ req.user.email }} / {{ req.phone_number }}
+            </p>
+            <div class="mt-auto text-end">
+              <small class="text-muted">Accepted on {{ req.created_at|date:"M d, Y" }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12">
+        <div class="alert alert-info text-center shadow-sm">No accepted requests found.</div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination -->
+  {% if requests.has_other_pages %}
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      {% if requests.has_previous %}
+        <li class="page-item">
+          <a class="page-link rounded-circle" href="?page={{ requests.previous_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Previous">
+            &laquo;
+          </a>
+        </li>
+      {% endif %}
+      {% for num in requests.paginator.page_range %}
+        {% if requests.number == num %}
+          <li class="page-item active"><span class="page-link rounded-circle">{{ num }}</span></li>
+        {% else %}
+          <li class="page-item"><a class="page-link rounded-circle" href="?page={{ num }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if requests.has_next %}
+        <li class="page-item">
+          <a class="page-link rounded-circle" href="?page={{ requests.next_page_number }}{% for key, value in current_filters.items %}{% if value %}&{{ key }}={{ value }}{% endif %}{% endfor %}" aria-label="Next">
+            &raquo;
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="successToast" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+  <div class="toast-header bg-success text-white">
+    <strong class="me-auto">Success</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+  </div>
+  <div class="toast-body">Status updated successfully.</div>
+</div>
+
+<style>
+body {
+  background: linear-gradient(135deg, #f5f7fa, #d4fc79);
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Tabs */
+.nav-tabs .nav-link {
+  border: none;
+  color: #495057;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+.nav-tabs .nav-link.active {
+  background: linear-gradient(135deg, #00b09b, #96c93d);
+  color: white !important;
+  border-radius: 10px;
+}
+.nav-tabs .nav-link:hover {
+  color: #28a745;
+}
+
+/* Cards */
+.accepted-card {
+  border-left: 6px solid #28a745;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.6s ease both;
+  background-color: #ffffff;
+}
+.accepted-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+/* Pagination */
+.page-link {
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.page-link:hover {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {opacity: 0; transform: translateY(15px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var messageContent = "{{ messages.0 }}" || "";
+  if (messageContent) {
+    document.querySelector('#successToast .toast-body').textContent = messageContent;
+    var toast = new bootstrap.Toast(document.getElementById('successToast'));
+    toast.show();
+  }
+});
+</script>
+{% endblock %}

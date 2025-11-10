@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile | PetRescue{% endblock %}
+
+{% block content %}
+<section class="profile-section position-relative overflow-hidden py-5">
+  <div class="animated-bg"></div>
+
+  <div class="container position-relative z-1">
+    <!-- Header -->
+    <div class="text-center mb-5">
+      <h1 class="fw-bold text-white fade-up">🐾 Your PetRescue Profile</h1>
+      <p class="text-light fade-up-delay">Manage your details and showcase your love for pets 💖</p>
+    </div>
+
+    <div class="row align-items-start g-4">
+      <!-- LEFT PANEL -->
+      <div class="col-lg-4">
+        <div class="profile-card glassy fade-up">
+          <div class="text-center p-4">
+            <div class="avatar-wrapper position-relative mb-3">
+              <img src="{% static 'images/default_profile.png' %}" alt="Avatar" class="profile-avatar">
+              <div class="avatar-ring"></div>
+            </div>
+            <h4 class="fw-bold text-white mb-0">{{ user.username }}</h4>
+            <p class="text-light small mb-3">{{ user.email }}</p>
+            <p class="fst-italic text-light-50 mb-3">
+              {% if user.profile.bio %}
+                “{{ user.profile.bio }}”
+              {% else %}
+                “Tell your pet story ❤️”
+              {% endif %}
+            </p>
+            <div class="badge rounded-pill bg-gradient px-3 py-2 mb-4">
+              <i class="fas fa-map-marker-alt me-1"></i> {{ user.profile.location|default:"Unknown" }}
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 stats-container">
+              <div class="stat">
+                <h4 class="count text-success" data-target="12">0</h4>
+                <small>Reported</small>
+              </div>
+              <div class="stat">
+                <h4 class="count text-info" data-target="8">0</h4>
+                <small>Helped</small>
+              </div>
+              <div class="stat">
+                <h4 class="count text-warning" data-target="45">0</h4>
+                <small>Days</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="col-lg-8">
+        <div class="glass-panel p-4 fade-up-delay">
+          <h5 class="fw-bold text-white mb-3"><i class="fas fa-pen me-2"></i> Edit Information</h5>
+
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+
+          <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-white-50">Username</label>
+                {{ u_form.username }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50">Email</label>
+                {{ u_form.email }}
+              </div>
+              <div class="col-12">
+                <label class="form-label text-white-50">About You</label>
+                {{ p_form.bio }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50">Location</label>
+                {{ p_form.location }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-white-50">Birth Date</label>
+                {{ p_form.birth_date }}
+              </div>
+            </div>
+            <button type="submit" class="btn btn-save w-100 mt-4">
+              <i class="fas fa-save me-2"></i> Save Changes
+            </button>
+          </form>
+        </div>
+
+        <div class="glass-panel mt-4 fade-up-delay2 d-flex flex-wrap justify-content-between align-items-center p-3">
+          <div>
+            <h6 class="text-white fw-semibold mb-1">⚙️ Account Settings</h6>
+            <p class="text-light-50 small mb-0">Change your password or delete your account</p>
+          </div>
+          <div>
+            <a href="#" class="btn btn-outline-light me-2 rounded-pill"><i class="fas fa-key me-1"></i> Password</a>
+            <a href="#" class="btn btn-outline-danger rounded-pill"><i class="fas fa-trash me-1"></i> Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STYLES ============ -->
+<style>
+:root {
+  --blue: #0ea5e9;
+  --green: #10b981;
+  --purple: #6366f1;
+  --dark: #0f172a;
+}
+
+body {
+  background: #0f172a;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Background Animation */
+.animated-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, var(--blue), var(--green), var(--purple));
+  animation: gradientShift 10s ease infinite;
+  background-size: 300% 300%;
+  opacity: 0.3;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Glass Cards */
+.glassy, .glass-panel {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  transition: 0.4s ease;
+}
+.glassy:hover, .glass-panel:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* Avatar Animation */
+.avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+}
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  object-fit: cover;
+  z-index: 2;
+  position: relative;
+  animation: floatAvatar 3s ease-in-out infinite;
+}
+.avatar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px dashed rgba(255,255,255,0.5);
+  animation: rotateRing 10s linear infinite;
+}
+@keyframes floatAvatar {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes rotateRing {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Stats */
+.stats-container .stat {
+  text-align: center;
+}
+.stat h4 {
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+.stat small {
+  color: rgba(255,255,255,0.7);
+}
+
+/* Forms */
+.profile-form input, .profile-form textarea, .profile-form select {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  transition: all 0.3s ease;
+}
+.profile-form input:focus, .profile-form textarea:focus {
+  box-shadow: 0 0 10px var(--blue);
+  outline: none;
+}
+
+/* Buttons */
+.btn-save {
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: .8rem;
+  transition: 0.3s ease;
+}
+.btn-save:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,255,255,0.4);
+}
+
+/* Animations */
+.fade-up { opacity: 0; transform: translateY(20px); animation: fadeUp 1s forwards; }
+.fade-up-delay { opacity: 0; transform: translateY(20px); animation: fadeUp 1s .3s forwards; }
+.fade-up-delay2 { opacity: 0; transform: translateY(20px); animation: fadeUp 1s .6s forwards; }
+@keyframes fadeUp { to { opacity: 1; transform: none; } }
+
+.text-light-50 { color: rgba(255,255,255,0.6); }
+.bg-gradient {
+  background: linear-gradient(135deg, var(--green), var(--blue));
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Animated counters
+  document.querySelectorAll('.count').forEach(num => {
+    const target = +num.getAttribute('data-target');
+    let count = 0;
+    const speed = target / 80;
+    const update = () => {
+      count += speed;
+      if(count < target) {
+        num.textContent = Math.floor(count);
+        requestAnimationFrame(update);
+      } else num.textContent = target;
+    };
+    const obs = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting){
+        update();
+        obs.disconnect();
+      }
+    }, {threshold: .6});
+    obs.observe(num);
+  });
+</script>
+{% endblock %}
